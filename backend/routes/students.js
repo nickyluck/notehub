@@ -23,7 +23,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { nom, prenom, classe, presence } = req.body;
-    // Créer l'étudiant (user_id n'est plus utilisé)
+    // Créer l'étudiant
     const result = await pool.query(
       'INSERT INTO students (nom, prenom, classe, presence) VALUES ($1, $2, $3, $4) RETURNING id, nom, prenom, classe, presence',
       [nom, prenom, classe, presence || 'present']

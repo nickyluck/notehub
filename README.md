@@ -119,15 +119,14 @@ La page **Tableaux de bord** fournit une vue d'ensemble des résultats de notati
 
 L'application utilise une architecture client-serveur avec une base de données PostgreSQL :
 
-- **Authentification** : Système d'inscription/connexion avec JWT
-- **Isolation des données** : Chaque utilisateur ne voit que ses propres données
+- **Authentification** : Système de connexion avec mot de passe unique (ADMIN_PASSWORD) et JWT
+- **Système mono-utilisateur** : Application dédiée à un seul utilisateur avec authentification par mot de passe unique
 - **Stockage durable** : Toutes les données sont persistées dans PostgreSQL
 
 ### Structure de stockage
 
 Les données sont stockées dans une base de données PostgreSQL avec les tables suivantes :
 
-- **users** : Comptes utilisateurs (email, mot de passe hashé)
 - **students** : Liste des étudiants (nom, prénom, présence, classe)
 - **grids** : Grilles de correction
 - **exercises** : Exercices (liés à une grille)

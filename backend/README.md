@@ -1,4 +1,4 @@
-# Backend API - Correcteur de Copies
+# Backend API - NoteHub
 
 ## Prérequis
 
@@ -80,8 +80,7 @@ npm start
 
 ### Authentification
 
-- `POST /api/auth/register` - Inscription
-- `POST /api/auth/login` - Connexion
+- `POST /api/auth/login` - Connexion (mot de passe unique)
 
 ### Étudiants
 
@@ -107,11 +106,10 @@ npm start
 
 - Toutes les routes (sauf `/api/auth/*`) nécessitent un token JWT
 - Le token doit être envoyé dans le header : `Authorization: Bearer <token>`
-- Les données sont isolées par utilisateur (user_id)
+- Système mono-utilisateur avec authentification par mot de passe unique (ADMIN_PASSWORD)
 
 ## Structure de la base de données
 
-- `users` - Utilisateurs
 - `students` - Étudiants
 - `grids` - Grilles de correction
 - `exercises` - Exercices

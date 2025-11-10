@@ -130,7 +130,7 @@ FROM information_schema.tables
 WHERE table_schema = 'public';
 ```
 
-Vous devriez voir toutes les tables : `users`, `students`, `grids`, `exercises`, `questions`, `items`, `grades`, `adjustments`, `comments`
+Vous devriez voir toutes les tables : `students`, `grids`, `exercises`, `questions`, `items`, `grades`, `adjustments`, `comments`
 
 ## Dépannage
 

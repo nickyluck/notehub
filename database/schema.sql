@@ -1,17 +1,6 @@
--- Table des utilisateurs (pour authentification)
-CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    name VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 -- Table des étudiants
 CREATE TABLE IF NOT EXISTS students (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     nom VARCHAR(255) NOT NULL,
     prenom VARCHAR(255) NOT NULL,
     classe VARCHAR(100),
@@ -23,7 +12,6 @@ CREATE TABLE IF NOT EXISTS students (
 -- Table des grilles
 CREATE TABLE IF NOT EXISTS grids (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     titre VARCHAR(255) NOT NULL,
     classe VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -65,7 +53,6 @@ CREATE TABLE IF NOT EXISTS items (
 -- Table des notes (grades)
 CREATE TABLE IF NOT EXISTS grades (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     grid_id INTEGER REFERENCES grids(id) ON DELETE CASCADE,
     student_id INTEGER REFERENCES students(id) ON DELETE CASCADE,
     exercise_id INTEGER REFERENCES exercises(id) ON DELETE CASCADE,
@@ -81,7 +68,6 @@ CREATE TABLE IF NOT EXISTS grades (
 -- Table des ajustements
 CREATE TABLE IF NOT EXISTS adjustments (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     grid_id INTEGER REFERENCES grids(id) ON DELETE CASCADE,
     student_id INTEGER REFERENCES students(id) ON DELETE CASCADE,
     exercise_id INTEGER,
@@ -94,7 +80,6 @@ CREATE TABLE IF NOT EXISTS adjustments (
 -- Table des commentaires
 CREATE TABLE IF NOT EXISTS comments (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     grid_id INTEGER REFERENCES grids(id) ON DELETE CASCADE,
     student_id INTEGER REFERENCES students(id) ON DELETE CASCADE,
     comment TEXT,
@@ -104,8 +89,6 @@ CREATE TABLE IF NOT EXISTS comments (
 );
 
 -- Index pour améliorer les performances
-CREATE INDEX IF NOT EXISTS idx_students_user_id ON students(user_id);
-CREATE INDEX IF NOT EXISTS idx_grids_user_id ON grids(user_id);
 CREATE INDEX IF NOT EXISTS idx_grades_composite ON grades(grid_id, student_id);
 CREATE INDEX IF NOT EXISTS idx_adjustments_composite ON adjustments(grid_id, student_id);
 

@@ -52,22 +52,20 @@ Le script va :
 🔌 Test de connexion à la base de données...
 ✅ Connexion réussie!
 
-📝 9 requêtes à exécuter
+📝 8 requêtes à exécuter
 
-[1/9] Exécution: users...
-  ✅ users créé avec succès
-[2/9] Exécution: students...
+[1/8] Exécution: students...
   ✅ students créé avec succès
 ...
 
 ==================================================
 📊 Résumé:
-   ✅ Succès: 9
+   ✅ Succès: 8
 ==================================================
 
 🔍 Vérification des tables créées...
 
-📋 Tables trouvées (9):
+📋 Tables trouvées (8):
    - adjustments
    - comments
    - exercises
@@ -76,7 +74,6 @@ Le script va :
    - items
    - questions
    - students
-   - users
 
 ✅ Configuration de la base de données terminée avec succès!
 
@@ -171,5 +168,5 @@ WHERE table_schema = 'public'
 ORDER BY table_name;
 ```
 
-Vous devriez voir 9 tables : `users`, `students`, `grids`, `exercises`, `questions`, `items`, `grades`, `adjustments`, `comments`.
+Vous devriez voir 8 tables : `students`, `grids`, `exercises`, `questions`, `items`, `grades`, `adjustments`, `comments`.
 
