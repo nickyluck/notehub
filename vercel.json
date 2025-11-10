@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "buildCommand": "npm run vercel-build",
   "builds": [
     {
       "src": "backend/server.js",
@@ -9,6 +10,10 @@
   "routes": [
     {
       "src": "/api/(.*)",
+      "dest": "backend/server.js"
+    },
+    {
+      "src": "/(.*)",
       "dest": "backend/server.js"
     }
   ],
