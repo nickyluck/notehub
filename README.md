@@ -212,6 +212,8 @@ Dans les tableaux de bord, les notes sont normalisées selon une moyenne et un �
 Pour plus de détails, consultez :
 - `SETUP_BACKEND.md` - Configuration PostgreSQL local
 - `DEPLOY_NEON.md` - Configuration et déploiement avec Neon (cloud)
+- `VERCEL_NEON_SETUP.md` - Si vous avez créé Neon depuis Vercel
+- `SETUP_DATABASE.md` - Script automatique pour créer les tables (recommandé)
 
 ### Authentification
 

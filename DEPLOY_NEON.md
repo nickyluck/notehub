@@ -1,5 +1,7 @@
 # Guide de déploiement avec Neon
 
+> **Note :** Si vous avez créé Neon directement depuis Vercel, consultez `VERCEL_NEON_SETUP.md` pour un guide spécifique.
+
 ## Configuration de Neon
 
 ### Étape 1 : Créer un compte et un projet Neon
@@ -45,6 +47,9 @@ NODE_ENV=development
 JWT_SECRET=votre_secret_jwt_tres_securise_changez_moi_123456789
 
 # Option 1 : Utiliser la connection string complète (recommandé pour Neon)
+# Vercel utilise souvent POSTGRES_URL, le code supporte les deux
+POSTGRES_URL=postgresql://user:password@host.neon.tech/dbname?sslmode=require
+# ou
 DATABASE_URL=postgresql://user:password@host.neon.tech/dbname?sslmode=require
 
 # Option 2 : Ou utiliser les variables séparées
