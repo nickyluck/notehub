@@ -79,8 +79,8 @@ const GradingPage = () => {
     }
   };
 
-  const selectedGrid = grids.find(g => g.id === selectedGridId);
-  const selectedStudent = students.find(s => s.id === selectedStudentId);
+  const selectedGrid = grids.find(g => String(g.id) === String(selectedGridId));
+  const selectedStudent = students.find(s => String(s.id) === String(selectedStudentId));
 
   const handleItemChange = (exerciseId, questionId, itemId, value, customMode = null) => {
     const newGrades = { ...grades };
@@ -190,7 +190,7 @@ const GradingPage = () => {
   };
 
   const navigateStudent = (direction) => {
-    const currentIndex = students.findIndex(s => s.id === selectedStudentId);
+    const currentIndex = students.findIndex(s => String(s.id) === String(selectedStudentId));
     if (currentIndex === -1) return;
 
     const newIndex = direction === 'next' 

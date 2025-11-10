@@ -12,7 +12,12 @@ router.get('/', async (req, res) => {
     const result = await pool.query(
       'SELECT id, nom, prenom, classe, presence FROM students ORDER BY nom, prenom'
     );
-    res.json(result.rows);
+    // Convertir les IDs en string pour cohérence avec les autres routes
+    const students = result.rows.map(row => ({
+      ...row,
+      id: row.id.toString()
+    }));
+    res.json(students);
   } catch (error) {
     console.error('Erreur:', error);
     res.status(500).json({ error: 'Erreur serveur' });
@@ -28,7 +33,11 @@ router.post('/', async (req, res) => {
       'INSERT INTO students (nom, prenom, classe, presence) VALUES ($1, $2, $3, $4) RETURNING id, nom, prenom, classe, presence',
       [nom, prenom, classe, presence || 'present']
     );
-    res.status(201).json(result.rows[0]);
+    const student = result.rows[0];
+    res.status(201).json({
+      ...student,
+      id: student.id.toString()
+    });
   } catch (error) {
     console.error('Erreur:', error);
     res.status(500).json({ error: 'Erreur serveur' });
@@ -55,7 +64,11 @@ router.put('/:id', async (req, res) => {
       'UPDATE students SET nom = $1, prenom = $2, classe = $3, presence = $4, updated_at = CURRENT_TIMESTAMP WHERE id = $5 RETURNING id, nom, prenom, classe, presence',
       [nom, prenom, classe, presence, id]
     );
-    res.json(result.rows[0]);
+    const student = result.rows[0];
+    res.json({
+      ...student,
+      id: student.id.toString()
+    });
   } catch (error) {
     console.error('Erreur:', error);
     res.status(500).json({ error: 'Erreur serveur' });
