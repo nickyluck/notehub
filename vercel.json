@@ -33,7 +33,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/backend/server.js"
+      "dest": "/build/index.html"
     }
   ],
   "env": {
