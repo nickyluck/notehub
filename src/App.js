@@ -45,7 +45,7 @@ function Navigation({ user, onLogout }) {
           </li>
           {user && (
             <li className="user-info">
-              <span>{user.name || user.email}</span>
+              <span>{user.name || 'Utilisateur'}</span>
               <button onClick={handleLogout} className="logout-btn">Déconnexion</button>
             </li>
           )}
@@ -60,11 +60,16 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const currentUser = authAPI.getUser();
-    if (authAPI.isAuthenticated() && currentUser) {
-      setUser(currentUser);
+    try {
+      const currentUser = authAPI.getUser();
+      if (authAPI.isAuthenticated() && currentUser) {
+        setUser(currentUser);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement de l\'utilisateur:', error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   const handleLogin = (userData) => {

@@ -56,8 +56,16 @@ export const authAPI = {
   },
 
   getUser: () => {
-    const userStr = localStorage.getItem('user');
-    return userStr ? JSON.parse(userStr) : null;
+    try {
+      const userStr = localStorage.getItem('user');
+      return userStr ? JSON.parse(userStr) : null;
+    } catch (error) {
+      console.error('Erreur lors de la lecture de l\'utilisateur:', error);
+      // Nettoyer le localStorage en cas d'erreur
+      localStorage.removeItem('user');
+      localStorage.removeItem('authToken');
+      return null;
+    }
   }
 };
 
