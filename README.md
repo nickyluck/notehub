@@ -100,22 +100,49 @@ La page **Tableaux de bord** fournit une vue d'ensemble des résultats de notati
 - **Export CSV ou Excel** : Export des données en CSV ou Excel
 - **Export PDF** : Export des données en PDF pour chaque élève
 
-## Architecture des données
+## Architecture technique
+
+### Stack technologique
+
+**Frontend :**
+- React 18
+- React Router pour la navigation
+- CSS pour le styling
+
+**Backend :**
+- Node.js avec Express
+- PostgreSQL pour le stockage des données
+- JWT pour l'authentification
+- bcryptjs pour le hachage des mots de passe
+
+### Architecture des données
+
+L'application utilise une architecture client-serveur avec une base de données PostgreSQL :
+
+- **Authentification** : Système d'inscription/connexion avec JWT
+- **Isolation des données** : Chaque utilisateur ne voit que ses propres données
+- **Stockage durable** : Toutes les données sont persistées dans PostgreSQL
 
 ### Structure de stockage
 
-L'application stocke les données :
+Les données sont stockées dans une base de données PostgreSQL avec les tables suivantes :
 
-- Liste des étudiants (nom, prénom, présence, classe)
-- Grilles de correction
-- Notes associées à une grille
+- **users** : Comptes utilisateurs (email, mot de passe hashé)
+- **students** : Liste des étudiants (nom, prénom, présence, classe)
+- **grids** : Grilles de correction
+- **exercises** : Exercices (liés à une grille)
+- **questions** : Questions (liées à un exercice)
+- **items** : Items d'évaluation (liés à une question)
+- **grades** : Notes des étudiants
+- **adjustments** : Ajustements (bonus/malus)
+- **comments** : Commentaires sur les copies
 
 ### Modèle de données
 
 Les données sont structurées selon une hiérarchie stricte :
-- Chaque élément (grille, exercice, question, item) possède un identifiant unique
+- Chaque élément (grille, exercice, question, item) possède un identifiant unique généré par la base de données
 - Les points peuvent être définis explicitement ou calculés automatiquement ("auto")
-- Les notes des étudiants sont stockées avec un préfixe unique combinant l'ID de la grille et le nom de l'étudiant
+- Les notes des étudiants sont stockées avec une clé composite (grid_id, student_id, item_id)
 
 ## Calcul des scores
 
@@ -138,14 +165,69 @@ Le système calcule les scores de manière hiérarchique :
 
 Dans les tableaux de bord, les notes sont normalisées selon une moyenne et un écart-type cibles, permettant d'ajuster la distribution des notes tout en conservant l'ordre relatif des étudiants.
 
+## Installation et configuration
+
+### Prérequis
+
+- Node.js (version 14 ou supérieure)
+- PostgreSQL (version 12 ou supérieure)
+- npm
+
+### Installation
+
+1. **Cloner le projet** (ou télécharger les fichiers)
+
+2. **Configurer la base de données PostgreSQL** :
+   ```bash
+   createdb correcteur_db
+   psql correcteur_db < database/schema.sql
+   ```
+
+3. **Configurer le backend** :
+   ```bash
+   cd backend
+   npm install
+   cp .env.example .env
+   # Éditer .env avec vos paramètres de base de données
+   ```
+
+4. **Configurer le frontend** :
+   ```bash
+   # À la racine du projet
+   npm install
+   # Créer un fichier .env avec :
+   # REACT_APP_API_URL=http://localhost:5000/api
+   ```
+
+5. **Démarrer l'application** :
+   ```bash
+   # Terminal 1 - Backend
+   cd backend
+   npm run dev
+   
+   # Terminal 2 - Frontend
+   npm start
+   ```
+
+Pour plus de détails, consultez :
+- `SETUP_BACKEND.md` - Configuration PostgreSQL local
+- `DEPLOY_NEON.md` - Configuration et déploiement avec Neon (cloud)
+
+### Authentification
+
+L'application nécessite une inscription/connexion :
+- Créez un compte lors du premier lancement
+- Connectez-vous avec vos identifiants
+- Vos données sont isolées et privées
+
 ## Gestion des erreurs
 
 L'application intègre un système de gestion d'erreurs robuste :
 
 - **Messages conviviaux** : Les erreurs techniques sont converties en messages compréhensibles pour l'utilisateur
-- **Journalisation** : Toutes les erreurs sont enregistrées dans des fichiers de log
+- **Gestion API** : Gestion automatique des erreurs réseau et de connexion
 - **Récupération gracieuse** : L'application tente de récupérer des erreurs sans interrompre le flux de travail
-- **Validation des données** : Validation automatique des données saisies
+- **Validation des données** : Validation automatique côté client et serveur
 
 ## Cas d'usage typique
 
@@ -173,6 +255,8 @@ L'application intègre un système de gestion d'erreurs robuste :
 - **Automatisation** : Calculs automatiques à tous les niveaux
 - **Organisation** : Gestion claire des étudiants, grilles et notes
 - **Traçabilité** : Toutes les données sont sauvegardées et peuvent être exportées
-- **Performance** : Système de cache pour des chargements rapides
-- **Robustesse** : Gestion d'erreurs et validation des données
+- **Sécurité** : Authentification JWT et isolation des données par utilisateur
+- **Stockage durable** : Base de données PostgreSQL pour une persistance fiable
+- **Multi-utilisateurs** : Chaque enseignant a son propre espace de travail
+- **Robustesse** : Gestion d'erreurs et validation des données côté client et serveur
 

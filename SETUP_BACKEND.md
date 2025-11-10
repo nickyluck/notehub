@@ -1,6 +1,14 @@
 # Guide de configuration du backend
 
-## Étapes d'installation complète
+## Choix de la base de données
+
+Vous avez deux options :
+1. **PostgreSQL local** (pour développement local)
+2. **Neon** (base de données cloud, recommandé pour production)
+
+Pour Neon, consultez `DEPLOY_NEON.md`.
+
+## Option 1 : PostgreSQL local
 
 ### 1. Installer PostgreSQL
 
@@ -62,6 +70,10 @@ DB_USER=postgres
 DB_PASSWORD=votre_mot_de_passe_postgres
 ```
 
+## Option 2 : Neon (Cloud)
+
+Consultez le guide complet dans `DEPLOY_NEON.md`.
+
 ### 5. Démarrer le backend
 
 ```bash
@@ -97,7 +109,7 @@ npm start
 
 ### Erreur de connexion à la base de données
 
-- Vérifiez que PostgreSQL est démarré
+- Vérifiez que PostgreSQL est démarré (pour installation locale)
 - Vérifiez les identifiants dans `.env`
 - Testez la connexion : `psql -U postgres -d correcteur_db`
 
@@ -110,4 +122,9 @@ npm start
 
 - Vérifiez que le frontend utilise la bonne URL API
 - Le backend doit être démarré avant le frontend
+
+### Erreur SSL (avec Neon)
+
+- Vérifiez que `DATABASE_URL` contient `?sslmode=require`
+- Le code active automatiquement SSL pour Neon
 
