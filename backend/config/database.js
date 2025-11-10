@@ -1,10 +1,13 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
+// Vercel/Neon peut utiliser POSTGRES_URL ou DATABASE_URL
+const connectionString = process.env.POSTGRES_URL || process.env.DATABASE_URL;
+
 // Neon peut fournir une connection string complète
-const poolConfig = process.env.DATABASE_URL
+const poolConfig = connectionString
   ? {
-      connectionString: process.env.DATABASE_URL,
+      connectionString: connectionString,
       ssl: {
         rejectUnauthorized: false
       }
