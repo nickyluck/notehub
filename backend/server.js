@@ -25,18 +25,31 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'API fonctionnelle' });
 });
 
-// Servir les fichiers statiques du build React en production
-if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
+// Sur Vercel, les fichiers statiques sont servis directement par Vercel via vercel.json
+// Le serveur Node.js ne sert que les routes API
+if (process.env.VERCEL) {
+  // Ignorer les fichiers statiques - Vercel les sert via vercel.json
+  app.get(/\.(js|css|ico|png|jpg|svg|json|woff|woff2|ttf|eot)$/, (req, res) => {
+    res.status(404).json({ error: 'Fichier statique non trouvé' });
+  });
+  
+  // Route catch-all pour les routes non-API (React Router)
+  app.get('*', (req, res) => {
+    if (req.path.startsWith('/api/')) {
+      return res.status(404).json({ error: 'Route API non trouvée' });
+    }
+    // Pour les routes React Router, Vercel servira index.html via vercel.json
+    // Cette route ne devrait normalement pas être appelée
+    res.status(404).json({ error: 'Route non trouvée' });
+  });
+} else if (process.env.NODE_ENV === 'production') {
+  // En production locale, servir les fichiers statiques
   const fs = require('fs');
   
-  // Chemins possibles pour le build
   const possiblePaths = [
     path.join(process.cwd(), 'build'),
     path.join(__dirname, '../../build'),
     path.join(__dirname, '../build'),
-    path.join(__dirname, '../../.vercel/output/static'),
-    '/var/task/build',
-    path.join(process.cwd(), '.vercel/output/static'),
   ];
   
   let buildPath = null;
@@ -73,16 +86,6 @@ if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
     });
   } else {
     console.error('Erreur: Dossier build non trouvé');
-    
-    // Route de fallback
-    app.get('*', (req, res) => {
-      if (!req.path.startsWith('/api/')) {
-        res.status(404).json({ 
-          error: 'Build React non trouvé',
-          message: 'Le dossier build n\'a pas été trouvé. Vérifiez que le buildCommand est exécuté correctement.'
-        });
-      }
-    });
   }
 }
 
