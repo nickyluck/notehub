@@ -1,10 +1,10 @@
 // Utilitaires pour la gestion du stockage local
 
 export const STORAGE_KEYS = {
-  STUDENTS: 'correcteur_etudiants',
-  GRIDS: 'correcteur_grilles',
-  GRADES: 'correcteur_notes',
-  SETTINGS: 'correcteur_parametres'
+  STUDENTS: 'notehub_etudiants',
+  GRIDS: 'notehub_grilles',
+  GRADES: 'notehub_notes',
+  SETTINGS: 'notehub_parametres'
 };
 
 export const storage = {

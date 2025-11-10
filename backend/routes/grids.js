@@ -74,8 +74,7 @@ const getFullGrid = async (gridId) => {
 router.get('/', async (req, res) => {
   try {
     const gridsResult = await pool.query(
-      'SELECT id FROM grids WHERE user_id = $1 ORDER BY created_at DESC',
-      [req.user.userId]
+      'SELECT id FROM grids ORDER BY created_at DESC'
     );
 
     const grids = await Promise.all(
@@ -95,8 +94,8 @@ router.get('/:id', async (req, res) => {
     const { id } = req.params;
     
     const check = await pool.query(
-      'SELECT id FROM grids WHERE id = $1 AND user_id = $2',
-      [id, req.user.userId]
+      'SELECT id FROM grids WHERE id = $1',
+      [id]
     );
     
     if (check.rows.length === 0) {
@@ -121,8 +120,8 @@ router.post('/', async (req, res) => {
 
     // Créer la grille
     const gridResult = await client.query(
-      'INSERT INTO grids (user_id, titre, classe) VALUES ($1, $2, $3) RETURNING id',
-      [req.user.userId, titre, classe]
+      'INSERT INTO grids (titre, classe) VALUES ($1, $2) RETURNING id',
+      [titre, classe]
     );
     const gridId = gridResult.rows[0].id;
 
@@ -176,10 +175,10 @@ router.put('/:id', async (req, res) => {
     const { id } = req.params;
     const { titre, classe, exercises } = req.body;
 
-    // Vérifier que la grille appartient à l'utilisateur
+    // Vérifier que la grille existe
     const check = await client.query(
-      'SELECT id FROM grids WHERE id = $1 AND user_id = $2',
-      [id, req.user.userId]
+      'SELECT id FROM grids WHERE id = $1',
+      [id]
     );
     
     if (check.rows.length === 0) {
@@ -242,8 +241,8 @@ router.delete('/:id', async (req, res) => {
     const { id } = req.params;
     
     const check = await pool.query(
-      'SELECT id FROM grids WHERE id = $1 AND user_id = $2',
-      [id, req.user.userId]
+      'SELECT id FROM grids WHERE id = $1',
+      [id]
     );
     
     if (check.rows.length === 0) {

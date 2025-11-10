@@ -1,7 +1,7 @@
 {
-  "name": "correcteur-de-copies",
+  "name": "notehub",
   "version": "1.0.0",
-  "description": "Application web pour la correction et la notation de devoirs et d'examens",
+  "description": "Application web NoteHub pour la correction et la notation de devoirs et d'examens",
   "private": true,
   "dependencies": {
     "react": "^18.2.0",

@@ -21,7 +21,7 @@ function Navigation({ user, onLogout }) {
   return (
     <nav className="navbar">
       <div className="nav-container">
-        <h1 className="nav-title">Correcteur de Copies</h1>
+        <h1 className="nav-title">NoteHub</h1>
         <ul className="nav-links">
           <li>
             <Link to="/" className={location.pathname === '/' ? 'active' : ''}>

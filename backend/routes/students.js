@@ -10,8 +10,7 @@ router.use(authenticateToken);
 router.get('/', async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT id, nom, prenom, classe, presence FROM students WHERE user_id = $1 ORDER BY nom, prenom',
-      [req.user.userId]
+      'SELECT id, nom, prenom, classe, presence FROM students ORDER BY nom, prenom'
     );
     res.json(result.rows);
   } catch (error) {
@@ -24,9 +23,10 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { nom, prenom, classe, presence } = req.body;
+    // Créer l'étudiant (user_id n'est plus utilisé)
     const result = await pool.query(
-      'INSERT INTO students (user_id, nom, prenom, classe, presence) VALUES ($1, $2, $3, $4, $5) RETURNING id, nom, prenom, classe, presence',
-      [req.user.userId, nom, prenom, classe, presence || 'present']
+      'INSERT INTO students (nom, prenom, classe, presence) VALUES ($1, $2, $3, $4) RETURNING id, nom, prenom, classe, presence',
+      [nom, prenom, classe, presence || 'present']
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
@@ -41,10 +41,10 @@ router.put('/:id', async (req, res) => {
     const { id } = req.params;
     const { nom, prenom, classe, presence } = req.body;
     
-    // Vérifier que l'étudiant appartient à l'utilisateur
+    // Vérifier que l'étudiant existe
     const check = await pool.query(
-      'SELECT id FROM students WHERE id = $1 AND user_id = $2',
-      [id, req.user.userId]
+      'SELECT id FROM students WHERE id = $1',
+      [id]
     );
     
     if (check.rows.length === 0) {
@@ -67,10 +67,10 @@ router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     
-    // Vérifier que l'étudiant appartient à l'utilisateur
+    // Vérifier que l'étudiant existe
     const check = await pool.query(
-      'SELECT id FROM students WHERE id = $1 AND user_id = $2',
-      [id, req.user.userId]
+      'SELECT id FROM students WHERE id = $1',
+      [id]
     );
     
     if (check.rows.length === 0) {

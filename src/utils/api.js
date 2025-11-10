@@ -34,22 +34,10 @@ const apiRequest = async (endpoint, options = {}) => {
 
 // API Auth
 export const authAPI = {
-  login: async (email, password) => {
+  login: async (password) => {
     const data = await apiRequest('/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ email, password })
-    });
-    if (data.token) {
-      localStorage.setItem('authToken', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-    }
-    return data;
-  },
-  
-  register: async (email, password, name) => {
-    const data = await apiRequest('/auth/register', {
-      method: 'POST',
-      body: JSON.stringify({ email, password, name })
+      body: JSON.stringify({ password })
     });
     if (data.token) {
       localStorage.setItem('authToken', data.token);

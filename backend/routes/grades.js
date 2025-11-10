@@ -10,14 +10,14 @@ router.get('/:gridId/:studentId', async (req, res) => {
   try {
     const { gridId, studentId } = req.params;
 
-    // Vérifier que la grille et l'étudiant appartiennent à l'utilisateur
+    // Vérifier que la grille et l'étudiant existent
     const gridCheck = await pool.query(
-      'SELECT id FROM grids WHERE id = $1 AND user_id = $2',
-      [gridId, req.user.userId]
+      'SELECT id FROM grids WHERE id = $1',
+      [gridId]
     );
     const studentCheck = await pool.query(
-      'SELECT id FROM students WHERE id = $1 AND user_id = $2',
-      [studentId, req.user.userId]
+      'SELECT id FROM students WHERE id = $1',
+      [studentId]
     );
 
     if (gridCheck.rows.length === 0 || studentCheck.rows.length === 0) {
@@ -28,23 +28,23 @@ router.get('/:gridId/:studentId', async (req, res) => {
     const gradesResult = await pool.query(
       `SELECT exercise_id, question_id, item_id, value, custom_mode 
        FROM grades 
-       WHERE grid_id = $1 AND student_id = $2 AND user_id = $3`,
-      [gridId, studentId, req.user.userId]
+       WHERE grid_id = $1 AND student_id = $2`,
+      [gridId, studentId]
     );
 
     // Récupérer les ajustements
     const adjustmentsResult = await pool.query(
       `SELECT exercise_id, adjustment_type, value 
        FROM adjustments 
-       WHERE grid_id = $1 AND student_id = $2 AND user_id = $3`,
-      [gridId, studentId, req.user.userId]
+       WHERE grid_id = $1 AND student_id = $2`,
+      [gridId, studentId]
     );
 
     // Récupérer le commentaire
     const commentResult = await pool.query(
       `SELECT comment FROM comments 
-       WHERE grid_id = $1 AND student_id = $2 AND user_id = $3`,
-      [gridId, studentId, req.user.userId]
+       WHERE grid_id = $1 AND student_id = $2`,
+      [gridId, studentId]
     );
 
     // Formater les données comme dans localStorage
@@ -86,14 +86,14 @@ router.post('/:gridId/:studentId', async (req, res) => {
     const { gridId, studentId } = req.params;
     const { grades, adjustments, comment } = req.body;
 
-    // Vérifier que la grille et l'étudiant appartiennent à l'utilisateur
+    // Vérifier que la grille et l'étudiant existent
     const gridCheck = await client.query(
-      'SELECT id FROM grids WHERE id = $1 AND user_id = $2',
-      [gridId, req.user.userId]
+      'SELECT id FROM grids WHERE id = $1',
+      [gridId]
     );
     const studentCheck = await client.query(
-      'SELECT id FROM students WHERE id = $1 AND user_id = $2',
-      [studentId, req.user.userId]
+      'SELECT id FROM students WHERE id = $1',
+      [studentId]
     );
 
     if (gridCheck.rows.length === 0 || studentCheck.rows.length === 0) {
@@ -103,8 +103,8 @@ router.post('/:gridId/:studentId', async (req, res) => {
 
     // Supprimer les anciennes notes
     await client.query(
-      'DELETE FROM grades WHERE grid_id = $1 AND student_id = $2 AND user_id = $3',
-      [gridId, studentId, req.user.userId]
+      'DELETE FROM grades WHERE grid_id = $1 AND student_id = $2',
+      [gridId, studentId]
     );
 
     // Insérer les nouvelles notes
@@ -116,12 +116,11 @@ router.post('/:gridId/:studentId', async (req, res) => {
         const itemId = parseInt(parts[2]);
 
         await client.query(
-          `INSERT INTO grades (user_id, grid_id, student_id, exercise_id, question_id, item_id, value, custom_mode)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+          `INSERT INTO grades (grid_id, student_id, exercise_id, question_id, item_id, value, custom_mode)
+           VALUES ($1, $2, $3, $4, $5, $6, $7)
            ON CONFLICT (grid_id, student_id, item_id) 
-           DO UPDATE SET value = $7, custom_mode = $8, updated_at = CURRENT_TIMESTAMP`,
+           DO UPDATE SET value = $6, custom_mode = $7, updated_at = CURRENT_TIMESTAMP`,
           [
-            req.user.userId,
             gridId,
             studentId,
             exerciseId,
@@ -136,8 +135,8 @@ router.post('/:gridId/:studentId', async (req, res) => {
 
     // Supprimer les anciens ajustements
     await client.query(
-      'DELETE FROM adjustments WHERE grid_id = $1 AND student_id = $2 AND user_id = $3',
-      [gridId, studentId, req.user.userId]
+      'DELETE FROM adjustments WHERE grid_id = $1 AND student_id = $2',
+      [gridId, studentId]
     );
 
     // Insérer les nouveaux ajustements
@@ -146,19 +145,19 @@ router.post('/:gridId/:studentId', async (req, res) => {
       const exerciseId = key === 'global' ? null : parseInt(key);
 
       await client.query(
-        `INSERT INTO adjustments (user_id, grid_id, student_id, exercise_id, adjustment_type, value)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
-        [req.user.userId, gridId, studentId, exerciseId, adjustmentType, parseFloat(value)]
+        `INSERT INTO adjustments (grid_id, student_id, exercise_id, adjustment_type, value)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [gridId, studentId, exerciseId, adjustmentType, parseFloat(value)]
       );
     }
 
     // Gérer le commentaire
     await client.query(
-      `INSERT INTO comments (user_id, grid_id, student_id, comment)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO comments (grid_id, student_id, comment)
+       VALUES ($1, $2, $3)
        ON CONFLICT (grid_id, student_id)
-       DO UPDATE SET comment = $4, updated_at = CURRENT_TIMESTAMP`,
-      [req.user.userId, gridId, studentId, comment || '']
+       DO UPDATE SET comment = $3, updated_at = CURRENT_TIMESTAMP`,
+      [gridId, studentId, comment || '']
     );
 
     await client.query('COMMIT');

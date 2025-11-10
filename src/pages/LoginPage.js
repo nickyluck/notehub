@@ -3,12 +3,7 @@ import { authAPI } from '../utils/api';
 import './LoginPage.css';
 
 const LoginPage = ({ onLogin }) => {
-  const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    name: ''
-  });
+  const [password, setPassword] = useState('');
   const [message, setMessage] = useState({ type: '', text: '' });
   const [loading, setLoading] = useState(false);
 
@@ -18,19 +13,8 @@ const LoginPage = ({ onLogin }) => {
     setMessage({ type: '', text: '' });
 
     try {
-      let data;
-      if (isLogin) {
-        data = await authAPI.login(formData.email, formData.password);
-      } else {
-        if (!formData.name.trim()) {
-          setMessage({ type: 'error', text: 'Le nom est requis' });
-          setLoading(false);
-          return;
-        }
-        data = await authAPI.register(formData.email, formData.password, formData.name);
-      }
-
-      setMessage({ type: 'success', text: isLogin ? 'Connexion réussie' : 'Inscription réussie' });
+      const data = await authAPI.login(password);
+      setMessage({ type: 'success', text: 'Connexion réussie' });
       setTimeout(() => {
         onLogin(data.user);
       }, 500);
@@ -41,69 +25,23 @@ const LoginPage = ({ onLogin }) => {
     }
   };
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
   return (
     <div className="login-page">
       <div className="login-container">
-        <h1>Correcteur de Copies</h1>
-        <div className="login-tabs">
-          <button
-            className={isLogin ? 'active' : ''}
-            onClick={() => setIsLogin(true)}
-          >
-            Connexion
-          </button>
-          <button
-            className={!isLogin ? 'active' : ''}
-            onClick={() => setIsLogin(false)}
-          >
-            Inscription
-          </button>
-        </div>
+        <h1>NoteHub</h1>
+        <p className="login-subtitle">Veuillez entrer le mot de passe pour accéder à l'application</p>
 
         <form onSubmit={handleSubmit} className="login-form">
-          {!isLogin && (
-            <div className="form-group">
-              <label>Nom</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required={!isLogin}
-                placeholder="Votre nom"
-              />
-            </div>
-          )}
-
-          <div className="form-group">
-            <label>Email</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              placeholder="votre@email.com"
-            />
-          </div>
-
           <div className="form-group">
             <label>Mot de passe</label>
             <input
               type="password"
               name="password"
-              value={formData.password}
-              onChange={handleChange}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="••••••••"
-              minLength="6"
+              autoFocus
             />
           </div>
 
@@ -114,7 +52,7 @@ const LoginPage = ({ onLogin }) => {
           )}
 
           <button type="submit" className="button" disabled={loading}>
-            {loading ? 'Chargement...' : (isLogin ? 'Se connecter' : 'S\'inscrire')}
+            {loading ? 'Chargement...' : 'Se connecter'}
           </button>
         </form>
       </div>

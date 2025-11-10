@@ -15,7 +15,7 @@ app.use('/api/students', require('./routes/students'));
 app.use('/api/grids', require('./routes/grids'));
 app.use('/api/grades', require('./routes/grades'));
 
-// Route de test
+// Route de santé pour vérifier que l'API fonctionne
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'API fonctionnelle' });
 });
@@ -24,28 +24,23 @@ app.get('/api/health', (req, res) => {
 if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
   const fs = require('fs');
   
-  // Essayer plusieurs chemins possibles pour le build
+  // Chemins possibles pour le build
   const possiblePaths = [
-    path.join(process.cwd(), 'build'),           // Depuis la racine (Vercel standard)
-    path.join(__dirname, '../../build'),         // Depuis backend/
-    path.join(__dirname, '../build'),           // Alternative
-    path.join(__dirname, '../../.vercel/output/static'), // Vercel output
-    '/var/task/build',                          // Vercel Lambda
-    path.join(process.cwd(), '.vercel/output/static'), // Vercel output alternatif
+    path.join(process.cwd(), 'build'),
+    path.join(__dirname, '../../build'),
+    path.join(__dirname, '../build'),
+    path.join(__dirname, '../../.vercel/output/static'),
+    '/var/task/build',
+    path.join(process.cwd(), '.vercel/output/static'),
   ];
   
   let buildPath = null;
-  const testedPaths = [];
   
   for (const possiblePath of possiblePaths) {
-    testedPaths.push(possiblePath);
     try {
       const indexPath = path.join(possiblePath, 'index.html');
       if (fs.existsSync(indexPath)) {
         buildPath = possiblePath;
-        console.log(`✅ Build trouvé à: ${buildPath}`);
-        console.log(`📁 Répertoire de travail: ${process.cwd()}`);
-        console.log(`📁 __dirname: ${__dirname}`);
         break;
       }
     } catch (error) {
@@ -60,9 +55,7 @@ if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
     }));
     
     // Route catch-all : renvoyer index.html pour toutes les routes non-API
-    // Cela permet à React Router de gérer le routage côté client
     app.get('*', (req, res) => {
-      // Ne pas intercepter les routes API
       if (req.path.startsWith('/api/')) {
         return res.status(404).json({ error: 'Route API non trouvée' });
       }
@@ -74,28 +67,14 @@ if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
       }
     });
   } else {
-    console.error('❌ Dossier build non trouvé!');
-    console.error('📁 Chemins testés:', testedPaths);
-    console.error('📁 process.cwd():', process.cwd());
-    console.error('📁 __dirname:', __dirname);
+    console.error('Erreur: Dossier build non trouvé');
     
-    // Lister les fichiers dans le répertoire courant pour déboguer
-    try {
-      const files = fs.readdirSync(process.cwd());
-      console.error('📋 Fichiers dans process.cwd():', files);
-    } catch (e) {
-      console.error('❌ Impossible de lire process.cwd()');
-    }
-    
-    // Route de fallback avec message d'erreur détaillé
+    // Route de fallback
     app.get('*', (req, res) => {
       if (!req.path.startsWith('/api/')) {
         res.status(404).json({ 
           error: 'Build React non trouvé',
-          message: 'Le dossier build n\'a pas été trouvé. Vérifiez que le buildCommand est exécuté correctement.',
-          testedPaths: testedPaths,
-          cwd: process.cwd(),
-          dirname: __dirname
+          message: 'Le dossier build n\'a pas été trouvé. Vérifiez que le buildCommand est exécuté correctement.'
         });
       }
     });
