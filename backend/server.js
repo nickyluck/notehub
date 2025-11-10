@@ -9,6 +9,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Ignorer les requêtes pour favicon.ico pour éviter les erreurs 404
+app.get('/favicon.ico', (req, res) => {
+  res.status(204).end();
+});
+
 // Routes API
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/students', require('./routes/students'));
